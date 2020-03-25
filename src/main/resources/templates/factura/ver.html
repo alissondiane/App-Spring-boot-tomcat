@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+	<header th:replace="layout/layout :: header"></header>
+	<div class="container py-4">
+		<div class="card bg-light">
+			<div class="card-header bg bg-primary text-white" th:text="${titulo}"></div>
+			<div class="card-body">
+				<h4 class="card-title">
+					<a class="btn btn-primary btn-xs"
+						th:href="@{/ver/}+ ${factura.cliente.id}"
+						th:text="'&laquo;Volver'"></a> 
+					<a class="btn btn-danger btn-xs float-right mx-2"
+						th:href="@{'/factura/ver/' + ${factura.id}(format=pdf)}"
+						th:text="'PDF'"></a>
+					<a class="btn btn-success btn-xs float-right"
+						th:href="@{'/factura/ver/' + ${factura.id}(format=xlsx)}"
+						th:text="'XLSX'"></a>
+				</h4>
+
+				<ul class="list-group my-2">
+					<li class="list-group-item list-group-item-primary" th:text="#{text.factura.ver.datos.cliente}"></li>
+					<li class="list-group-item" th:text="${factura.cliente}"></li>
+					<li class="list-group-item" th:text="${factura.cliente.email}"></li>
+				</ul>
+				
+				<ul class="list-group my-2">
+					<li class="list-group-item list-group-item-success" th:text="#{text.factura.ver.datos.factura}"></li>
+					<li class="list-group-item" th:text="'Folio: ' + ${factura.id}"></li>
+					<li class="list-group-item" th:text="'Descripción: ' + ${factura.descripcion}"></li>
+					<li class="list-group-item" th:text="'Fecha: ' + ${factura.createAt}"></li>
+				</ul>
+				<div th:if="${#lists.isEmpty(factura.items)}"
+					class="alert alert-info my-4"
+					th:text="'No hay lineas para la factura '+${factura.descripcion}"></div>
+				<table th:if="${not #lists.isEmpty(factura.items)}" 
+				class="table table-bordered table-hover table-striped my-3">
+					<thead class="thead-dark">
+						<tr>
+							
+							<th th:text="#{text.factura.form.item.nombre}">Producto</th>
+							<th th:text="#{text.factura.form.item.precio}">Precio</th>
+							<th th:text="#{text.factura.form.item.cantidad}">Cantidad</th>
+							<th th:text="#{text.factura.form.item.total}">Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="linea: ${factura.items}">
+							<td th:text=${linea.producto.nombre}></td>
+							<td th:text=${linea.producto.precio}></td>
+							<td th:text=${linea.cantidad}></td>
+							<td th:text=${linea.calcularImporte()}></td>
+						</tr>
+					</tbody>
+				</table>
+				<h5 class="float-right" th:text="#{text.factura.form.total}" >Gran total : <span th:text="${factura.total}" class="badge badge-secondary"></span></h5>
+				<div class="card border-info mb4" style="max-width:20rem;">
+				<div class="card-header">Observaciones</div>
+				<div class="card-body">
+				<p class="card-text" th:text="${factura.observacion}" th:if="${not #strings.isEmpty(factura.observacion)}"></p>
+				<h4 class="card-title" th:text="#{text.factura.ver.no.observaciones}" th:if="${#strings.isEmpty(factura.observacion)}"></h4>
+				</div>
+				</div>
+				<a class="btn btn-light btn-xs my-2"
+								th:href="@{/ver/}+ ${factura.cliente.id}" th:text="'&laquo;Volver'"></a>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+</html>
